@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import Connect.SQL.database;
+import sound.SoundManager;
 
 public class Game {
 	static final String DRIVER_CLASS = "com.mysql.cj.jdbc.Driver";
@@ -26,12 +27,13 @@ public class Game {
 	private List<cnvat> dts;
 	private nguoichoi player;
 	Block playerSprite=new Block(50, 50, 0xffff0000);
+	private SoundManager soundManager = new SoundManager();
+
 //	public double sx[],sy[],lx[],ly[];
 //	public int sizx[],sizy[],col[],n;
 	public int n;
 	public static boolean gameOver=true,gameStarted=false;
 	public double startTime=0;
-	public Sound sound;
 	config cf=new config();
 	ArrayList<Double> 
 			sx=new ArrayList<>()
@@ -66,10 +68,11 @@ public class Game {
 	public Game() {
 		khoitao();
 		cf.loadConfig("config.xml");
+		soundManager.playMusic("src/sound/bg.wav");
+		
 	}
 	public void khoitao()
 	{
-		sound=new Sound();
 		dts=new ArrayList<cnvat>();//0xff0000ff
 //		dts.add(new cnvat(100,100,new Block(85,85,0xff0f),7.0,4.3));
 //		dts.add(new cnvat(355,90,new Block(90,75,0xff0f),3.6,6.0));
@@ -144,13 +147,13 @@ public class Game {
 			if(player.x<a.x+a.w && player.x+player.w>a.x && player.y<a.y+a.h &&player.y+player.h>a.y)
 			{
 				gameOver=true;
-
+//				soundManager.playMusic("src/dodge/bg.wav");
 			}
 		}
 		if(player.x<=60||player.x+player.w>=Duck.W-60||player.y<=60||player.y+player.h>=Duck.H-60)
 		{
 			gameOver=true;
-
+//			soundManager.playMusic("src/dodge/bg.wav");
 		}
 		if(gameOver)
 		{
@@ -161,8 +164,10 @@ public class Game {
 				cf.saveconfig("best", best);
 				insertScore(best);
 			}
+			soundManager.stopMusic();
 			
 		}
+
 	}
 	public void vegame()
 	{
