@@ -68,7 +68,6 @@ public class Game {
 	public Game() {
 		khoitao();
 		cf.loadConfig("config.xml");
-		soundManager.playMusic("src/sound/bg.wav");
 		
 	}
 	public void khoitao()
@@ -96,6 +95,7 @@ public class Game {
 
 		        dts.add(new cnvat(x, y, new Block(sizex, sizey, 0xff0f), sx, sy));
 		    }
+		    
 
 		    br.close();
 		    fr.close();
@@ -106,6 +106,7 @@ public class Game {
 		
 		player=new nguoichoi(Duck.W/2-playerSprite.w/2,Duck.H/2-playerSprite.h/2,playerSprite);
 		gameOver=false;gameStarted=false;
+		soundManager.playMusic("src/sound/bg.wav");
 	}
 	public void capnhat()
 	{
@@ -116,6 +117,9 @@ public class Game {
 				khoitao();
 			}return;
 		}
+//		while(!gameOver) {
+//			soundManager.playMusic("src/sound/bg.wav");
+//		}
 		if(!gameStarted)
 		{
 			if(chuot.buttonDown(MouseEvent.BUTTON1))
@@ -182,6 +186,7 @@ public class Game {
 		{
 			Duck.pixel[i]=nguoiquet.pixels[i];
 		}
+		
 	}
 	public void ketthuc(Graphics2D g2)
 	{
