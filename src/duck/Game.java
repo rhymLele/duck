@@ -69,6 +69,7 @@ public class Game {
 		khoitao();
 		cf.loadConfig("config.xml");
 		
+		
 	}
 	public void khoitao()
 	{
@@ -106,7 +107,7 @@ public class Game {
 		
 		player=new nguoichoi(Duck.W/2-playerSprite.w/2,Duck.H/2-playerSprite.h/2,playerSprite);
 		gameOver=false;gameStarted=false;
-		soundManager.playMusic("src/sound/bg.wav");
+		soundManager.playMusic("bg.wav");
 	}
 	public void capnhat()
 	{
@@ -194,7 +195,7 @@ public class Game {
 		{
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2.setColor(Color.black);
-			g2.setFont(new Font("Arial",1,70));
+			g2.setFont(new Font("Monospaced",1,70));
 			String g="GameOver";
 			String st="Time:"+lastTime+"s";
 			String sbs="Best:"+best+"s";
@@ -202,8 +203,19 @@ public class Game {
 			int ig2=g2.getFontMetrics().stringWidth(st)/2;
 			int ig3=g2.getFontMetrics().stringWidth(sbs)/2;
 			g2.drawString(g, Duck.W/2-ig1, 150);
-			g2.drawString(st, Duck.W/2-ig2, 150*2);
-			g2.drawString(sbs, Duck.W/2-ig3, 150*3);
+			g2.drawString(st, Duck.W/2-ig2, 175*2);
+			g2.drawString(sbs, Duck.W/2-ig3, 175*3);
+		}
+		if(!gameOver && !gameStarted) {
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setColor(new Color(0,0,0));
+			g2.setFont(new Font("Monospaced",1,60));
+			String menu="DUCK!";
+			String click="Click to start!";
+			int ig4=g2.getFontMetrics().stringWidth(menu)/2;
+			int ig5=g2.getFontMetrics().stringWidth(click)/2;
+			g2.drawString(menu, Duck.W/2-ig4, 150);
+			g2.drawString(click, Duck.W/2-ig5, 600);
 		}
 	}
 }
