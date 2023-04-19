@@ -10,7 +10,7 @@ import java.awt.image.DataBufferInt;
 
 import javax.swing.JFrame;
 public class Duck extends Canvas implements Runnable{
-	public static final int W=600,H=600;
+	public static final int W=700,H=700;
 	public static final float scale=1f;
 	
 	private Game G;
