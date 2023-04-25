@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,58 +14,79 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import javax.swing.JComponent;
+
 import Connect.SQL.database;
 import sound.SoundManager;
 
-public class Game {
+public class Game extends JComponent{
 	static final String DRIVER_CLASS = "com.mysql.cj.jdbc.Driver";
-	public static double best,lastTime;
+	public static double best,lastTime,scr;
 	private List<cnvat> dts;
+	private List<cnvat> b;
 	private nguoichoi player;
+	private Key key;
+	public static final int heart=1;
+	public  int mang;
 	Block playerSprite=new Block(50, 50, 0xffff0000);
 	private SoundManager soundManager = new SoundManager();
-
-//	public double sx[],sy[],lx[],ly[];
-//	public int sizx[],sizy[],col[],n;
 	public int n;
 	public static boolean gameOver=true,gameStarted=false;
 	public double startTime=0;
 	config cf=new config();
-	ArrayList<Double> 
-			sx=new ArrayList<>()
-			,sy=new ArrayList<>()
-			,lx=new ArrayList<>()
-			,ly=new ArrayList<>();
-	ArrayList<Integer> sizx=new ArrayList<>()
-			,sizy=new ArrayList<>()
-			,col=new ArrayList<>();
-	 public double[] lxList = new double[100];
-	 public double[] lyList = new double[100];
-	 public int[] sizxList = new int[100];
-	 public int[] sizyList = new int[100];
-	 public int[] sxList = new int[100];
-	 public int[] syList = new int[100];
+	
 	public int insertScore(double score)
 	{
 		try {
 			Class.forName(DRIVER_CLASS);
 			Connection cn=database.getConnection();
-			PreparedStatement prt=cn.prepareStatement("INSERT highscore(score) VALUES(?)");
-			prt.setDouble(1, score);			
-			prt.executeUpdate();
-			database.closeConnection(cn);
-			System.out.println("Sut");
+//			PreparedStatement prt=cn.prepareStatement("INSERT highscore(score) VALUES(?)");
+//			prt.setDouble(1, score);			
+//			prt.executeUpdate();
+//			PreparedStatement prt1=cn.prepareStatement("delete from highscore where score >5");
+//			prt1.executeUpdate();
+//			Statement prtt=cn.createStatement();
+//			ResultSet rs = prtt.executeQuery("SELECT * FROM highscore");
+//			while(rs.next())
+//			{
+//				double scr1 = rs.getDouble("score");
+//				System.out.println(scr1);
+//				
+//			}
+//			database.closeConnection(cn);
+			double bestScore = getBestScore(cn);
+			if (best > bestScore) {
+				 PreparedStatement ps = cn.prepareStatement("DELETE FROM highscore");
+				 ps.executeUpdate();
+	            PreparedStatement prt = cn.prepareStatement("INSERT INTO highscore (score) VALUES (?)");
+	            prt.setDouble(1, score);
+	            prt.executeUpdate();
+	            System.out.println("Success");
+	        }
+
+	        database.closeConnection(cn);
+			
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return 0;
+	}
+	private double getBestScore(Connection cn) throws SQLException {
+	    double bestScore = 0.0;
+	    Statement stmt = cn.createStatement();
+	    ResultSet rs = stmt.executeQuery("SELECT MAX(score) AS best_score FROM highscore");
+	    if (rs.next()) {
+	        bestScore = rs.getDouble("best_score");
+	    }
+	    return bestScore;
 	}
 	public Game() {
 		khoitao();
@@ -73,12 +96,15 @@ public class Game {
 	}
 	public void khoitao()
 	{
-		dts=new ArrayList<cnvat>();//0xff0000ff
+		mang=100;
+		dts=new ArrayList<cnvat>();//
 //		dts.add(new cnvat(100,100,new Block(85,85,0xff0f),7.0,4.3));
 //		dts.add(new cnvat(355,90,new Block(90,75,0xff0f),3.6,6.0));
 //		dts.add(new cnvat(100,430,new Block(40,80,0xff0f),7.0,-6.0));
 //		dts.add(new cnvat(415,450,new Block(125,30,0xff0f),-5.2,-8.3));
 //		dts.add(new cnvat(50,50,new Block(125,30,0xff0f),-5.2,-8.3));
+		b=new ArrayList<cnvat>();//0xff0f
+		b.add(new cnvat(100,100,new Block(70,70,0xff0f),3.0,3.3));
 		try {
 		    FileReader fr = new FileReader("config.txt");
 		    BufferedReader br = new BufferedReader(fr);
@@ -91,10 +117,10 @@ public class Game {
 		        double y = Double.parseDouble(tokens[1]);
 		        int sizex = Integer.parseInt(tokens[2]);
 		        int sizey =Integer.parseInt(tokens[3]);
-		        double sx = Double.parseDouble(tokens[4]);
-		        double sy = Double.parseDouble(tokens[5]);
-
-		        dts.add(new cnvat(x, y, new Block(sizex, sizey, 0xff0f), sx, sy));
+		        double speedx = Double.parseDouble(tokens[4]);
+		        double speedy = Double.parseDouble(tokens[5]);
+		        //(double)Math.random()*(600-100)
+		        dts.add(new cnvat(x, y, new Block(sizex, sizey,0xff0000ff ), speedx, speedy));
 		    }
 		    
 
@@ -118,9 +144,6 @@ public class Game {
 				khoitao();
 			}return;
 		}
-//		while(!gameOver) {
-//			soundManager.playMusic("src/sound/bg.wav");
-//		}
 		if(!gameStarted)
 		{
 			if(chuot.buttonDown(MouseEvent.BUTTON1))
@@ -138,12 +161,24 @@ public class Game {
 				return;
 			}
 		}
-		player.cn();
+		player.capnhat();
 		for(int i=0;i<dts.size();i++)
 		{
 			dts.get(i).cn();
 		}
+		for(int i=0;i<b.size();i++)
+		{
+			b.get(i).cn();
+		}
 		vacham();
+	}
+	private void death()
+	{
+		mang--;
+		if(mang<=0)
+		{
+			gameOver=true;
+		}
 	}
 	private void vacham() {
 		for(int i=0;i<dts.size();i++)
@@ -152,13 +187,23 @@ public class Game {
 			if(player.x<a.x+a.w && player.x+player.w>a.x && player.y<a.y+a.h &&player.y+player.h>a.y)
 			{
 				gameOver=true;
-//				soundManager.playMusic("src/dodge/bg.wav");
+//				mang--;
+			}
+		}
+		for(int i=0;i<b.size();i++)
+		{
+			cnvat c=b.get(i);
+			if(player.x<c.x+c.w && player.x+player.w>c.x && player.y<c.y+c.h &&player.y+player.h>c.y)
+			{
+//				death();
+				c.setVx();
+				c.setVy();
 			}
 		}
 		if(player.x<=60||player.x+player.w>=Duck.W-60||player.y<=60||player.y+player.h>=Duck.H-60)
 		{
 			gameOver=true;
-//			soundManager.playMusic("src/dodge/bg.wav");
+//			mang--;
 		}
 		if(gameOver)
 		{
@@ -183,11 +228,24 @@ public class Game {
 		{
 			dts.get(i).quet();
 		}
+		for(int i=0;i<b.size();i++)
+		{
+			b.get(i).quet();
+		}
 		for(int i=0;i<Duck.pixel.length;i++)
 		{
 			Duck.pixel[i]=nguoiquet.pixels[i];
 		}
 		
+	}
+	public void renderText(Graphics2D g2)
+	{
+		g2.setFont(new Font("Arial",0,20));
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		String s="Heart:"+mang;
+		int w=g2.getFontMetrics().stringWidth(s)/2;
+		g2.setColor(Color.white);
+		g2.drawString(s, 250, 30);
 	}
 	public void ketthuc(Graphics2D g2)
 	{
@@ -195,7 +253,7 @@ public class Game {
 		{
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2.setColor(Color.black);
-			g2.setFont(new Font("Monospaced",1,70));
+			g2.setFont(new Font("Monospaced",1,50));
 			String g="GameOver";
 			String st="Time:"+lastTime+"s";
 			String sbs="Best:"+best+"s";
@@ -203,19 +261,19 @@ public class Game {
 			int ig2=g2.getFontMetrics().stringWidth(st)/2;
 			int ig3=g2.getFontMetrics().stringWidth(sbs)/2;
 			g2.drawString(g, Duck.W/2-ig1, 150);
-			g2.drawString(st, Duck.W/2-ig2, 175*2);
-			g2.drawString(sbs, Duck.W/2-ig3, 175*3);
+			g2.drawString(st, Duck.W/2-ig2, 150*2);
+			g2.drawString(sbs, Duck.W/2-ig3, 150*3);
 		}
 		if(!gameOver && !gameStarted) {
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2.setColor(new Color(0,0,0));
-			g2.setFont(new Font("Monospaced",1,60));
+			g2.setFont(new Font("Monospaced",1,40));
 			String menu="DUCK!";
 			String click="Click to start!";
 			int ig4=g2.getFontMetrics().stringWidth(menu)/2;
 			int ig5=g2.getFontMetrics().stringWidth(click)/2;
 			g2.drawString(menu, Duck.W/2-ig4, 150);
-			g2.drawString(click, Duck.W/2-ig5, 600);
+			g2.drawString(click, Duck.W/2-ig5, 400);
 		}
 	}
 }
