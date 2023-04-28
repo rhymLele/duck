@@ -95,7 +95,7 @@ public class Duck extends Canvas implements Runnable{
 		Graphics2D g2=(Graphics2D) bs.getDrawGraphics();
 		
 		g2.drawImage(image,0,0,(int)(W*scale),(int)(H*scale),null);
-	
+		G.renderText(g2);
 		G.ketthuc(g2);
 		g2.dispose();
 		bs.show();
