@@ -32,7 +32,6 @@ public class Game extends JComponent{
 	private List<cnvat> dts;
 	private List<cnvat> b;
 	private nguoichoi player;
-	private Key key;
 	public static final int heart=1;
 	public  int mang;
 	Block playerSprite=new Block(50, 50, 0xffff0000);
@@ -47,20 +46,6 @@ public class Game extends JComponent{
 		try {
 			Class.forName(DRIVER_CLASS);
 			Connection cn=database.getConnection();
-//			PreparedStatement prt=cn.prepareStatement("INSERT highscore(score) VALUES(?)");
-//			prt.setDouble(1, score);			
-//			prt.executeUpdate();
-//			PreparedStatement prt1=cn.prepareStatement("delete from highscore where score >5");
-//			prt1.executeUpdate();
-//			Statement prtt=cn.createStatement();
-//			ResultSet rs = prtt.executeQuery("SELECT * FROM highscore");
-//			while(rs.next())
-//			{
-//				double scr1 = rs.getDouble("score");
-//				System.out.println(scr1);
-//				
-//			}
-//			database.closeConnection(cn);
 			double bestScore = getBestScore(cn);
 			if (best > bestScore) {
 				 PreparedStatement ps = cn.prepareStatement("DELETE FROM highscore");
@@ -96,15 +81,10 @@ public class Game extends JComponent{
 	}
 	public void khoitao()
 	{
-		mang=100;
+		mang=2;
 		dts=new ArrayList<cnvat>();//
-//		dts.add(new cnvat(100,100,new Block(85,85,0xff0f),7.0,4.3));
-//		dts.add(new cnvat(355,90,new Block(90,75,0xff0f),3.6,6.0));
-//		dts.add(new cnvat(100,430,new Block(40,80,0xff0f),7.0,-6.0));
-//		dts.add(new cnvat(415,450,new Block(125,30,0xff0f),-5.2,-8.3));
-//		dts.add(new cnvat(50,50,new Block(125,30,0xff0f),-5.2,-8.3));
 		b=new ArrayList<cnvat>();//0xff0f
-		b.add(new cnvat(100,100,new Block(70,70,0xff0f),3.0,3.3));
+		b.add(new cnvat(300,150,new Block(70,70,0xff0f),7.0,7.3));
 		try {
 		    FileReader fr = new FileReader("config.txt");
 		    BufferedReader br = new BufferedReader(fr);
@@ -187,7 +167,6 @@ public class Game extends JComponent{
 			if(player.x<a.x+a.w && player.x+player.w>a.x && player.y<a.y+a.h &&player.y+player.h>a.y)
 			{
 				gameOver=true;
-//				mang--;
 			}
 		}
 		for(int i=0;i<b.size();i++)
@@ -195,7 +174,7 @@ public class Game extends JComponent{
 			cnvat c=b.get(i);
 			if(player.x<c.x+c.w && player.x+player.w>c.x && player.y<c.y+c.h &&player.y+player.h>c.y)
 			{
-//				death();
+				death();
 				c.setVx();
 				c.setVy();
 			}
@@ -203,7 +182,6 @@ public class Game extends JComponent{
 		if(player.x<=60||player.x+player.w>=Duck.W-60||player.y<=60||player.y+player.h>=Duck.H-60)
 		{
 			gameOver=true;
-//			mang--;
 		}
 		if(gameOver)
 		{
