@@ -7,3 +7,4 @@ Hướng dẫn cài đặt và set up game
 -Tạo file config.txt để tạo ra chướng ngại vật mỗi dòng là một chướng ngại vật với thông số thứ tự như sau:
 2 số đầu tiên là tọa độ x,y của cnvat ,2 số tiếp theo là kích cỡ theo chiều w,h ,2 số cuối là vận tốc x,y của vật
 Vd:200,200,50,50,3.0,-4,0
+***Lưu ý:Nếu chạy lần đầu lúc kết thúc có thể sẽ bị giật đó là do game đẩy dữ liệu lần đầu của người dùng lên server.
